@@ -1,27 +1,39 @@
+import { useEffect } from "react";
 import QuoteList from "../components/quotes/QuoteList";
-
-export const DUMMY_QUOTES = [
-  {
-    id: "q1",
-    text: "She's wild, but never easy, cool, but full of fire",
-    author: "Jonny OX",
-  },
-  {
-    id: "q2",
-    text: "I Knew I really love her, when I miss her, and she was still in my arms",
-    author: "Atticus",
-  },
-  {
-    id: "q3",
-    text: "Everything mortal has moments inmortal",
-    author: "Amy Lowell",
-  },
-];
+import LoadingSpinner from "../components/UI/LoadingSpinner";
+import useHttp from "../hooks/use-http";
+import { getAllQuotes } from "../lib/api";
+import NotQuotesFound from "../components/quotes/NoQuotesFound";
 
 function Quotes() {
+  const {
+    sendRequest,
+    status,
+    data: allQuotes,
+    error,
+  } = useHttp(getAllQuotes, true);
+
+  useEffect(() => {
+    sendRequest();
+  }, [sendRequest]);
+
+  if (status === "pending") {
+    return (
+      <div className="centered">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) return <p className="center focused">{error}</p>;
+
+  if (status === "completed" && (!allQuotes || allQuotes.length === 0)) {
+    return <NotQuotesFound />;
+  }
+
   return (
     <section>
-      <QuoteList quotes={DUMMY_QUOTES} />
+      <QuoteList quotes={allQuotes} />
     </section>
   );
 }
