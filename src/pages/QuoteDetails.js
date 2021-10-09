@@ -1,4 +1,4 @@
-import { useParams, Route } from "react-router-dom";
+import { useParams, Route, Link } from "react-router-dom";
 import { Fragment } from "react";
 
 import Comments from "../components/comments/Comments";
@@ -14,9 +14,16 @@ function QuoteDetails() {
 
   return (
     <Fragment>
-      <section>
-        <HighlightedQuote text={quote.text} author={quote.author} />
-      </section>
+      <HighlightedQuote text={quote.text} author={quote.author} />
+
+      <Route path={`/quotes/${quote.id}`} exact>
+        <div className="centered">
+          <Link className="btn--flat" to={`/quotes/${quote.id}/comments`}>
+            Load Comments
+          </Link>
+        </div>
+      </Route>
+
       <Route path="/quotes/:quoteId/comments">
         <Comments />
       </Route>
